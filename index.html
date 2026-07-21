@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2027 상반기 휴양지 여행 비교</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  @font-face{
+    font-family:'GmarketSans';
+    src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+    font-weight:500;
+    font-style:normal;
+  }
+  @font-face{
+    font-family:'GmarketSans';
+    src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
+    font-weight:700;
+    font-style:normal;
+  }
+  :root{
+    --sea-900:#013049;
+    --sea-700:#00577d;
+    --sea-500:#0f7fa8;
+    --sea-300:#5db6cf;
+    --sea-100:#e6f2f5;
+    --sand:#f7f1e3;
+    --accent:#00c189;
+    --accent-bg:#e1faf1;
+    --ok:#00a274;
+    --ok-bg:#e1faf1;
+    --fail:#c94b4b;
+    --fail-bg:#fbeaea;
+    --ink:#1b2a37;
+    --muted:#6b7c8c;
+    --card:#ffffff;
+    --line:#e1e9ef;
+    --radius:14px;
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:linear-gradient(180deg,var(--sea-100) 0%, #fff 320px);
+    color:var(--ink);
+    line-height:1.5;
+    padding-bottom:60px;
+  }
+  header.hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(180deg, rgba(1,48,73,.18) 0%, rgba(1,48,73,.45) 100%),
+      url('img/main.jpg') center 45%/cover no-repeat;
+    color:#fff;
+    padding:44px 20px 32px;
+    text-align:center;
+    min-height:220px;
+  }
+  header.hero h1{
+    margin:0;
+    font-family:'GmarketSans','Pretendard',sans-serif;
+    font-size:1.6rem;
+    font-weight:500;
+    letter-spacing:.3px;
+    text-shadow:0 2px 10px rgba(0,0,0,.35);
+  }
+  header.hero .sub{
+    margin-top:8px;
+    font-size:.85rem;
+    color:rgba(255,255,255,.9);
+    text-shadow:0 1px 6px rgba(0,0,0,.35);
+  }
+  .goal-badges{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    margin-top:16px;
+    flex-wrap:wrap;
+  }
+  .goal-badges span{
+    background:rgba(255,255,255,.92);
+    color:var(--sea-900);
+    font-weight:700;
+    padding:6px 14px;
+    border-radius:999px;
+    font-size:.85rem;
+    box-shadow:0 2px 8px rgba(0,40,60,.18);
+  }
+  .wrap{
+    max-width:720px;
+    margin:0 auto;
+    padding:0 16px;
+  }
+  .dates{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:18px;
+    font-size:.8rem;
+    color:rgba(255,255,255,.9);
+    flex-wrap:wrap;
+  }
+  .dates span{
+    background:rgba(0,0,0,.18);
+    padding:4px 10px;
+    border-radius:8px;
+  }
+
+  /* Tabs */
+  .tabbar{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:#fff;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    gap:6px;
+    padding:10px 16px;
+    max-width:720px;
+    margin:0 auto;
+    overflow-x:auto;
+  }
+  .tabbar button{
+    flex:1;
+    min-width:110px;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--muted);
+    padding:10px 8px;
+    border-radius:10px;
+    font-size:.85rem;
+    font-weight:600;
+    cursor:pointer;
+    line-height:1.3;
+  }
+  .tabbar button .em{
+    display:block;
+    font-size:.72rem;
+    font-weight:400;
+    margin-top:2px;
+    opacity:.8;
+  }
+  .tabbar button.active{
+    background:var(--sea-500);
+    border-color:var(--sea-500);
+    color:#fff;
+  }
+
+  section.country{
+    display:none;
+    padding-top:18px;
+  }
+  section.country.active{
+    display:block;
+  }
+
+  .country-summary{
+    background:var(--sea-100);
+    border:1px solid #cfe6f3;
+    border-radius:var(--radius);
+    padding:14px 16px;
+    margin-bottom:18px;
+    font-size:.88rem;
+    color:var(--sea-900);
+  }
+
+  h3.section-title{
+    font-size:1rem;
+    margin:22px 0 12px;
+    padding-left:10px;
+    border-left:4px solid var(--sea-500);
+  }
+  h3.section-title:first-of-type{ margin-top:0; }
+
+  .flight-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .flight-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow:0 1px 3px rgba(10,37,64,.06);
+  }
+  .flight-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 16px;
+    background:var(--sea-900);
+    color:#fff;
+  }
+  .flight-head .airline{
+    font-weight:600;
+    font-size:.95rem;
+  }
+  .flight-head .price{
+    font-family:'GmarketSans','Pretendard',sans-serif;
+    font-weight:700;
+    font-size:1.02rem;
+  }
+  .flight-body{
+    padding:10px 16px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .flight-time{
+    font-size:.85rem;
+    color:var(--ink);
+    padding:6px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .flight-time:last-child{ border-bottom:none; }
+  .flight-option + .flight-option{
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px solid var(--line);
+  }
+  .opt-label{
+    font-size:.72rem;
+    font-weight:700;
+    color:var(--sea-500);
+    margin-bottom:4px;
+  }
+  .dir{
+    display:inline-block;
+    font-size:.68rem;
+    font-weight:700;
+    padding:2px 6px;
+    border-radius:6px;
+    margin-right:6px;
+    vertical-align:middle;
+  }
+  .dir-out{ background:var(--accent-bg); color:var(--ok); }
+  .dir-ret{ background:#eaf1fb; color:var(--sea-500); }
+  .flight-time a{
+    color:var(--sea-500);
+    font-weight:600;
+    text-decoration:none;
+  }
+  .flight-time a:hover{ text-decoration:underline; }
+
+  .feature-box{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px;
+    box-shadow:0 1px 3px rgba(10,37,64,.06);
+  }
+  .feature-tagline{
+    font-family:'GmarketSans','Pretendard',sans-serif;
+    font-size:.92rem;
+    color:var(--sea-700);
+    background:var(--sea-100);
+    border-radius:10px;
+    padding:10px 12px;
+    margin-bottom:14px;
+    text-align:center;
+  }
+  .feature-stats{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    margin-bottom:16px;
+  }
+  .feature-stat{
+    display:flex;
+    gap:8px;
+    font-size:.82rem;
+  }
+  .feature-stat .f-label{
+    flex:0 0 82px;
+    font-weight:700;
+    color:var(--sea-500);
+  }
+  .feature-stat .f-value{ color:var(--ink); }
+  .feature-heading{
+    font-size:.85rem;
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  .feature-heading.pros{ color:var(--ok); }
+  .feature-heading.cons{ color:var(--fail); }
+  .feature-box ul{
+    margin:0 0 14px;
+    padding-left:18px;
+    font-size:.82rem;
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+  .feature-box .feature-cons ul{ margin-bottom:0; }
+
+  .placeholder-box{
+    border:1px dashed #cbd8e0;
+    border-radius:var(--radius);
+    padding:20px 16px;
+    text-align:center;
+    color:var(--muted);
+    font-size:.85rem;
+    background:#f8fafb;
+  }
+
+  .compare-scroll{
+    overflow-x:auto;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:#fff;
+  }
+  table.compare{
+    width:100%;
+    border-collapse:collapse;
+    font-size:.82rem;
+    white-space:nowrap;
+  }
+  table.compare th{
+    background:var(--sea-100);
+    color:var(--sea-900);
+    font-weight:700;
+    text-align:left;
+    padding:10px 12px;
+    border-bottom:1px solid var(--line);
+  }
+  table.compare td{
+    padding:10px 12px;
+    border-bottom:1px solid var(--line);
+    color:var(--ink);
+  }
+  table.compare tr:last-child td{border-bottom:none;}
+  table.compare td.name{font-weight:700;color:var(--sea-700);}
+  table.compare td.price{color:var(--accent);font-weight:700;}
+  table.compare td.wrap-cell{ white-space:normal; max-width:150px; }
+  .star-rating{ font-size:.95rem; letter-spacing:1px; }
+  .star-fill{ color:#f2994a; }
+  .star-empty{ color:#dbe3e9; }
+  td.flight-time-cell{ white-space:normal; }
+  td.flight-time-cell details summary{
+    cursor:pointer;
+    color:var(--sea-500);
+    font-weight:600;
+    list-style:none;
+  }
+  td.flight-time-cell details summary::-webkit-details-marker{ display:none; }
+  td.flight-time-cell details summary::after{
+    content:' ▸ 상세';
+    font-size:.72rem;
+    color:var(--muted);
+    font-weight:400;
+  }
+  td.flight-time-cell details[open] summary::after{ content:' ▾ 접기'; }
+  td.flight-time-cell .ft-detail{
+    margin-top:6px;
+    padding-top:6px;
+    border-top:1px dashed var(--line);
+    font-size:.78rem;
+    color:var(--ink);
+    min-width:180px;
+  }
+  td.flight-time-cell .ft-row{
+    padding:4px 0;
+  }
+  td.flight-time-cell .ft-row + .ft-row{
+    margin-top:4px;
+    border-top:1px dashed var(--line);
+  }
+  .compare-note{
+    font-size:.76rem;
+    color:var(--muted);
+    margin-top:8px;
+  }
+
+  footer{
+    text-align:center;
+    font-size:.75rem;
+    color:var(--muted);
+    margin-top:40px;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>🏖️ 2027 상반기 휴양지 여행 비교</h1>
+  <div class="sub">아직 나라 미정 · 후보지 비교 중</div>
+  <div class="dates">
+    <span>2/24(수) 출발</span>
+    <span>2/28(일) 복귀 (예정)</span>
+  </div>
+  <div class="goal-badges"><span>👩‍👩‍👧 여행인원 3명</span></div>
+</header>
+
+<nav class="tabbar" id="tabbar">
+  <button class="country-btn active" data-country="all">📊 전체 비교<span class="em">한눈에 보기</span></button>
+  <button class="country-btn" data-country="phuket">🇹🇭 푸켓<span class="em">태국</span></button>
+  <button class="country-btn" data-country="bohol">🇵🇭 보홀<span class="em">필리핀</span></button>
+  <button class="country-btn" data-country="phuquoc">🇻🇳 푸꾸옥<span class="em">베트남</span></button>
+</nav>
+
+<div class="wrap">
+
+  <div id="country-sections"></div>
+
+  <!-- 국가별 한눈에 비교 -->
+  <section class="country active" id="country-all">
+    <h3 class="section-title">📊 국가별 한눈에 비교</h3>
+    <div class="compare-scroll">
+      <table class="compare">
+        <thead>
+          <tr>
+            <th>여행지</th>
+            <th>바다시야</th>
+            <th>리조트</th>
+            <th>최저 항공가</th>
+            <th>비행시간</th>
+            <th>숙소</th>
+          </tr>
+        </thead>
+        <tbody id="compare-body"></tbody>
+      </table>
+    </div>
+    <p class="compare-note">항공권은 네이버 항공권 26/07/21 기준 · 숙소는 구글 예약 기준 시세입니다.</p>
+  </section>
+
+</div>
+
+<footer>2027 상반기 휴양지 여행 비교 · 개인용 자료</footer>
+
+<script>
+// 국가별 데이터 (항공권/숙소, 나중에 숙소 항목만 채우면 됨)
+const COUNTRIES = {
+  phuket: {
+    label: "푸켓", flag: "🇹🇭", country: "태국", airport: "푸켓(HKT)",
+    flightNote: "직항 약 6시간대",
+    flights: [
+      { airline: "대한항공", price: "100만원", options: [
+        { out: "17:25 → 22:10 · 6시간 45분", ret: "23:40 → 07:35 · 5시간 55분" },
+      ] },
+      { airline: "아시아나", price: "100만원대", options: [
+        { out: "17:00 → 21:35 · 6시간 35분", ret: "22:55 → 07:10 · 6시간 15분" },
+      ] },
+    ],
+    features: {
+      tagline: "“실패 없는 정석 휴양지 - 예쁜 리조트, 다채로운 일상”",
+      sea: "보통~상 (피피섬 나가면 최상)", seaLevel: 3,
+      resort: "최상 (5성급, 인피니티풀 많음)", resortLevel: 5,
+      appeal: "휴양 + 인프라 + 유흥 + 섬투어",
+      pros: [
+        "리조트 천국: 인생샷 건지기 좋은 화려한 인피니티풀과 최고급 서비스를 갖춘 5성급 리조트가 넘쳐남",
+        "당일 피피섬 투어: 하루 날 잡아 피피섬/라차섬으로 스피드보트를 타고 나가면 에메랄드빛 바다에서 완벽한 스노클링이 가능",
+        "풍부한 밤문화 & 먹거리: 야시장, 올드타운, 빠통 해변 등 낮과 밤 모두 즐길거리가 풍부",
+      ],
+      cons: [
+        "푸켓 본섬 바로 앞 해변은 물이 생각보다 투명하지 않아, 스노클링을 하려면 무조건 배를 타고 나가야 함",
+        "인기 관광지인만큼 현지물가가 다소 비싼 편 (택시비, 유명음식점)",
+      ],
+    },
+    stays: [
+      { name: "코코넛 빌리지 리조트", price: "디럭스 풀뷰 1박 18만원대 (2인 1실) × 2실", note: "빠통비치 근처 · 3인이라 방 2개 필요 · 2/24~2/27 3박 기준", link: "https://blog.naver.com/a0024018/224136414857", linkLabel: "블로그 후기" },
+      { name: "부라사리 푸켓 리조트", price: "", note: "빠통비치 근처", link: "https://blog.naver.com/faitrever/224102119700", linkLabel: "블로그 후기" },
+    ],
+  },
+  bohol: {
+    label: "보홀", flag: "🇵🇭", country: "필리핀", airport: "보홀(TAG)",
+    flightNote: "직항 약 4~5시간대",
+    flights: [
+      { airline: "제주항공", price: "70만원", options: [
+        { out: "20:45 → 00:45 · 5시간", ret: "01:45 → 07:10 · 4시간 25분" },
+      ] },
+      { airline: "진에어 + 제주항공 조합", price: "75만원", options: [
+        { out: "진에어 18:00 → 22:00 · 5시간", ret: "제주항공 01:45 → 07:10 · 4시간 25분" },
+      ] },
+    ],
+    features: {
+      tagline: "“수중 액티비티 끝판왕 - 바다거북과 수영하는 진짜 맑은 바다”",
+      sea: "최상 (거북이/고래상어)", seaLevel: 5,
+      resort: "보통~중상 (아기자기한 감성 많음)", resortLevel: 3,
+      appeal: "압도적인 수중환경 & 자연 탐험",
+      pros: [
+        "압도적 스노클링 시야: 3곳 중 바다 속 시야와 생태계가 단연 1위. 빌리카삭 섬에서 야생 바다거북과 수영할 수 있다.",
+        "독특한 육상 관광: 초콜릿힐, 초소형 타르시어 안경원숭이 관람, 나비강 반딧불이 투어 등 바다 외에도 볼거리가 다양",
+        "휴양지 특유의 느긋함: 세부나 푸켓처럼 복잡하지 않고 한적한 휴양 분위기를 느낄 수 있다.",
+      ],
+      cons: [
+        "대형 럭셔리 리조트의 선택지가 푸켓이나 푸꾸옥에 비해 상대적으로 적다",
+      ],
+    },
+    stays: [],
+  },
+  phuquoc: {
+    label: "푸꾸옥", flag: "🇻🇳", country: "베트남", airport: "푸꾸옥(PQC)",
+    flightNote: "직항 5~6시간",
+    flights: [
+      { airline: "선 푸꾸옥 항공", price: "60만원", options: [
+        { out: "01:45 → 05:45", ret: "17:00 → 00:15" },
+        { out: "12:25 → 16:25", ret: "02:40 → 09:55" },
+      ] },
+      { airline: "비엣젯항공", price: "63만원", options: [
+        { out: "02:20 → 06:00", ret: "05:00 → 08:50" },
+        { out: "20:45 → 04:00", ret: "18:05 → 01:20" },
+      ] },
+    ],
+    features: {
+      tagline: "“가성비 럭셔리 호캉스 - 베트남 바다 중 예외적으로 깨끗한 섬”",
+      sea: "보통~상 (남부 섬 투어시 맑음)", seaLevel: 3,
+      resort: "상 (신축 대형 리조트 많음)", resortLevel: 4,
+      appeal: "남부 럭셔리 휴양 + 야시장 & 테마파크",
+      pros: [
+        "베트남 바다의 재발견: 1~3월 건기 시즌 남부로 섬 호핑 투어를 나가면, 육지 베트남(나트랑/다낭)과 달리 맑은 바다에서 스노클링이 가능",
+        "극강의 리조트 가성비: 신축 5성급 리조트와 풀빌라를 태국 푸켓 대비 20~30% 저렴한 가격에 이용할 수 있다.",
+        "편리한 부대시설: 케이블카, 빈원더스(테마파크/사파리), 야시장 등 놀거리가 모여있다.",
+      ],
+      cons: [
+        "자연 그대로의 바다 느낌보다는 대형 개발사가 만든 인공적인 테마파크 도시 느낌이 다소 강하다.",
+        "스노클링 자체의 해양 생태계(물고기 종류, 산호)는 필리핀 보홀에 비하면 아쉽다.",
+      ],
+    },
+    stayRefNote: { text: "푸꾸옥 숙소는 이 블로그에 잘 정리되어 있음", link: "https://blog.naver.com/mymoo-/224247917446" },
+    stays: [
+      { name: "파미아나 그린빌라", price: "", note: "", link: "", linkLabel: "" },
+      { name: "발렌티나 리조트 앤 스파", price: "", note: "", link: "https://www.agoda.com/sp/dADAx2HuR5s", linkLabel: "아고다에서 확인" },
+    ],
+  },
+};
+
+function stars(n){
+  return `<span class="star-rating" title="${n}/5"><span class="star-fill">${"★".repeat(n)}</span><span class="star-empty">${"★".repeat(5 - n)}</span></span>`;
+}
+
+function minPrice(flights){
+  const nums = flights.map(f => parseInt((f.price.match(/\d+/) || [null])[0], 10)).filter(n => !isNaN(n));
+  return nums.length ? Math.min(...nums) : null;
+}
+
+const sectionsWrap = document.getElementById("country-sections");
+const compareBody = document.getElementById("compare-body");
+
+Object.entries(COUNTRIES).forEach(([key, c], i) => {
+  const lowest = minPrice(c.flights);
+
+  // 국가별 상세 섹션
+  const section = document.createElement("section");
+  section.className = "country";
+  section.id = "country-" + key;
+
+  const flightCards = c.flights.map(f => `
+    <div class="flight-card">
+      <div class="flight-head">
+        <span class="airline">${f.airline}</span>
+        <span class="price">${f.price}</span>
+      </div>
+      <div class="flight-body">
+        ${f.options.map((o, oi) => `
+          <div class="flight-option">
+            ${f.options.length > 1 ? `<div class="opt-label">옵션 ${oi + 1}</div>` : ""}
+            <div class="flight-time"><span class="dir dir-out">가는편</span> 인천(ICN) → ${c.airport} &nbsp; ${o.out}</div>
+            <div class="flight-time"><span class="dir dir-ret">오는편</span> ${c.airport} → 인천(ICN) &nbsp; ${o.ret}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
+
+  const stayHtml = c.stays.length
+    ? c.stays.map(s => `
+        <div class="flight-card">
+          <div class="flight-head"><span class="airline">${s.name}</span><span class="price">${s.price || ""}</span></div>
+          <div class="flight-body">
+            ${s.note ? `<div class="flight-time">${s.note}</div>` : ""}
+            ${s.link ? `<div class="flight-time"><a href="${s.link}" target="_blank" rel="noopener">🔗 ${s.linkLabel || "링크 보기"}</a></div>` : ""}
+          </div>
+        </div>
+      `).join("")
+    : `<div class="placeholder-box">🏨 ${c.label} 숙소 정보는 아직 준비 중이에요. 정리되면 여기에 추가할게요.</div>`;
+
+  const featureHtml = `
+    <div class="feature-box">
+      <div class="feature-tagline">${c.features.tagline}</div>
+      <div class="feature-stats">
+        <div class="feature-stat"><span class="f-label">바다시야</span><span class="f-value">${c.features.sea}</span></div>
+        <div class="feature-stat"><span class="f-label">리조트 퀄리티</span><span class="f-value">${c.features.resort}</span></div>
+        <div class="feature-stat"><span class="f-label">핵심매력</span><span class="f-value">${c.features.appeal}</span></div>
+      </div>
+      <div class="feature-pros">
+        <div class="feature-heading pros">👍 장점</div>
+        <ul>${c.features.pros.map(p => `<li>${p}</li>`).join("")}</ul>
+      </div>
+      <div class="feature-cons">
+        <div class="feature-heading cons">👎 단점</div>
+        <ul>${c.features.cons.map(p => `<li>${p}</li>`).join("")}</ul>
+      </div>
+    </div>
+  `;
+
+  section.innerHTML = `
+    <div class="country-summary">${c.flag} <b>${c.label} (${c.country})</b> · ${c.flightNote} · 항공권 최저 ${lowest}만원부터</div>
+    <h3 class="section-title">🌴 여행지 특징</h3>
+    ${featureHtml}
+    <h3 class="section-title">✈️ 항공권</h3>
+    <div class="flight-list">${flightCards}</div>
+    <h3 class="section-title">🏨 숙소</h3>
+    ${c.stayRefNote ? `<p class="compare-note" style="margin:0 0 10px">📎 ${c.stayRefNote.text} · <a href="${c.stayRefNote.link}" target="_blank" rel="noopener">블로그 보기</a></p>` : ""}
+    <div class="flight-list">${stayHtml}</div>
+  `;
+  sectionsWrap.appendChild(section);
+
+  // 비교표 행
+  const flightTimeDetail = c.flights.map(f => `
+    <div class="ft-row"><b>${f.airline}</b> ${f.price}<br>${f.options.map((o, oi) =>
+      (f.options.length > 1 ? `[옵션${oi + 1}] ` : "") +
+      `가는 인천→${c.airport} ${o.out}<br>오는 ${c.airport}→인천 ${o.ret}`
+    ).join("<br>")}</div>
+  `).join("");
+
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td class="name">${c.flag} ${c.label}</td>
+    <td>${stars(c.features.seaLevel)}</td>
+    <td>${stars(c.features.resortLevel)}</td>
+    <td class="price">${lowest}만원~</td>
+    <td class="flight-time-cell">
+      <details>
+        <summary>${c.flightNote}</summary>
+        <div class="ft-detail">${flightTimeDetail}</div>
+      </details>
+    </td>
+    <td>${c.stays.length ? "정리됨" : "준비 중"}</td>
+  `;
+  compareBody.appendChild(tr);
+});
+
+// 탭 전환
+document.getElementById("tabbar").addEventListener("click", e => {
+  const btn = e.target.closest(".country-btn");
+  if (!btn) return;
+  document.querySelectorAll(".country-btn").forEach(b => b.classList.toggle("active", b === btn));
+  document.querySelectorAll("section.country").forEach(s => s.classList.toggle("active", s.id === "country-" + btn.dataset.country));
+});
+</script>
+
+</body>
+</html>
