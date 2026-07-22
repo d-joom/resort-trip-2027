@@ -248,6 +248,21 @@
     vertical-align:middle;
   }
   .highlight-note{ color:var(--accent) !important; font-weight:600; }
+  .extra-options{ display:none; }
+  .extra-options.show{ display:block; }
+  .more-btn{
+    width:100%;
+    margin-top:8px;
+    padding:8px;
+    border:1px dashed #cbd8e0;
+    background:#f8fafb;
+    border-radius:8px;
+    font-size:.78rem;
+    color:var(--sea-500);
+    font-weight:600;
+    cursor:pointer;
+  }
+  .more-btn:hover{ background:var(--sea-100); }
   .flight-time a{
     color:var(--sea-500);
     font-weight:600;
@@ -685,23 +700,35 @@ Object.entries(COUNTRIES).forEach(([key, c], i) => {
   section.className = "country";
   section.id = "country-" + key;
 
-  const flightCards = c.flights.map(f => `
+  const renderOption = (o, oi, total) => `
+    <div class="flight-option">
+      ${total > 1 ? `<div class="opt-label">옵션 ${oi + 1}</div>` : ""}
+      <div class="flight-time"><span class="dir dir-out">가는편</span> 인천(ICN) → ${c.airport} &nbsp; ${o.out}</div>
+      <div class="flight-time"><span class="dir dir-ret">오는편</span> ${c.airport} → 인천(ICN) &nbsp; ${o.ret}</div>
+    </div>
+  `;
+
+  const flightCards = c.flights.map((f, fi) => {
+    const extraId = `extra-${key}-${fi}`;
+    const moreLabel = `더보기 (${f.options.length - 1}개 더) ▾`;
+    return `
     <div class="flight-card">
       <div class="flight-head">
         <span class="airline">${f.airline}</span>
         <span class="price">${f.price}</span>
       </div>
       <div class="flight-body">
-        ${f.options.map((o, oi) => `
-          <div class="flight-option">
-            ${f.options.length > 1 ? `<div class="opt-label">옵션 ${oi + 1}</div>` : ""}
-            <div class="flight-time"><span class="dir dir-out">가는편</span> 인천(ICN) → ${c.airport} &nbsp; ${o.out}</div>
-            <div class="flight-time"><span class="dir dir-ret">오는편</span> ${c.airport} → 인천(ICN) &nbsp; ${o.ret}</div>
+        ${renderOption(f.options[0], 0, f.options.length)}
+        ${f.options.length > 1 ? `
+          <div class="extra-options" id="${extraId}">
+            ${f.options.slice(1).map((o, oi) => renderOption(o, oi + 1, f.options.length)).join("")}
           </div>
-        `).join("")}
+          <button class="more-btn" type="button" data-target="${extraId}" data-label="${moreLabel}">${moreLabel}</button>
+        ` : ""}
       </div>
     </div>
-  `).join("");
+  `;
+  }).join("");
 
   const stayHtml = c.stays.length
     ? c.stays.map(s => `
@@ -812,12 +839,20 @@ document.getElementById("tabbar").addEventListener("click", e => {
   document.querySelectorAll("section.country").forEach(s => s.classList.toggle("active", s.id === "country-" + btn.dataset.country));
 });
 
-// 사진 클릭 → 라이트박스
+// 항공권 더보기 / 사진 클릭 → 라이트박스
 sectionsWrap.addEventListener("click", e => {
+  const moreBtn = e.target.closest(".more-btn");
+  if (moreBtn) {
+    const target = document.getElementById(moreBtn.dataset.target);
+    const shown = target.classList.toggle("show");
+    moreBtn.textContent = shown ? "접기 ▴" : moreBtn.dataset.label;
+    return;
+  }
   const card = e.target.closest(".photo-card");
-  if (!card) return;
-  const group = PHOTOS[card.dataset.key][Number(card.dataset.group)];
-  openLightbox(group.images, 0);
+  if (card) {
+    const group = PHOTOS[card.dataset.key][Number(card.dataset.group)];
+    openLightbox(group.images, 0);
+  }
 });
 
 // 라이트박스 (사진 크게 보기)
