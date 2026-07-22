@@ -248,6 +248,7 @@
     vertical-align:middle;
   }
   .highlight-note{ color:var(--accent) !important; font-weight:600; }
+  .stay-thumb{ cursor:pointer; }
   .extra-options{ display:none; }
   .extra-options.show{ display:block; }
   .more-btn{
@@ -656,16 +657,27 @@ const COUNTRIES = {
       { area: "중부(공항)", desc: "마사지샵, 식당, 즈엉동 야시장 접근성 좋음, 3인 이하의 경우 교통이 짧고 주변 편의시설이 많아서 추천" },
     ],
     stays: [
-      { name: "파미아나 그린 빌라", area: "중부", price: "63만원", note: "싱글1 · 퀸1 · 풀뷰 트리플 (4박 기준)", link: "https://blog.naver.com/darrr_byyy/224278489215", linkLabel: "블로그 후기" },
-      { name: "베스트 웨스턴 프리미어 소나씨 푸꾸옥", area: "중부", price: "60만원", note: "이그제큐티브 가든뷰 스위트 · 퀸2 · 방2/거실1/화장실2 · 침대 추가 요청 가능", link: "https://blog.naver.com/adore323/223907860745", linkLabel: "블로그 후기" },
-      { name: "모벤픽 리조트 웨이벌리 푸꾸옥", area: "북부", price: "70만원", note: "디럭스 패밀리룸 · 오션뷰 · 퀸2", link: "https://blog.naver.com/nhh511/224349877091", linkLabel: "블로그 후기" },
-      { name: "모벤픽 빌라 & 레지던스 푸꾸옥", highlight: "😍 숙소에만 있어도 좋아보임", note: "침대 추가 요청 가능", link: "https://blog.naver.com/gamseongtae/224246063408", linkLabel: "블로그 후기",
+      { name: "파미아나 그린 빌라", area: "중부", price: "63만원", note: "싱글1 · 퀸1 · 풀뷰 트리플 (4박 기준)", link: "https://blog.naver.com/darrr_byyy/224278489215", linkLabel: "블로그 후기", photoKey: "famiana" },
+      { name: "베스트 웨스턴 프리미어 소나씨 푸꾸옥", area: "중부", price: "60만원", note: "이그제큐티브 가든뷰 스위트 · 퀸2 · 방2/거실1/화장실2 · 침대 추가 요청 가능", link: "https://blog.naver.com/adore323/223907860745", linkLabel: "블로그 후기", photoKey: "bestwestern" },
+      { name: "모벤픽 리조트 푸꾸옥", area: "북부", highlight: "😍 숙소에만 있어도 좋아보임 · 웨이벌리·빌라&레지던스 숙소동만 다르고 부대시설은 공용", note: "침대 추가 요청 가능", photoKey: "moevenpick",
+        links: [
+          { url: "https://blog.naver.com/nhh511/224349877091", label: "웨이벌리 후기" },
+          { url: "https://blog.naver.com/gamseongtae/224246063408", label: "빌라&레지던스 후기" },
+        ],
         rooms: [
-          { name: "패밀리 씨뷰 스튜디오", detail: "킹2 · 방2/욕실2 · 60만원" },
-          { name: "풀빌라 레이크뷰", detail: "거실1/침실2/욕실2 · 킹2 · 개인풀 있음 · 80만원" },
+          { name: "디럭스 패밀리룸 (웨이벌리)", detail: "오션뷰 · 퀸2 · 70만원" },
+          { name: "패밀리 씨뷰 스튜디오 (빌라&레지던스)", detail: "킹2 · 방2/욕실2 · 60만원" },
+          { name: "풀빌라 레이크뷰 (빌라&레지던스)", detail: "거실1/침실2/욕실2 · 킹2 · 개인풀 있음 · 80만원" },
         ] },
     ],
   },
+};
+
+// 숙소별 사진 (img/[국가]/숙소/ 기준)
+const STAY_PHOTOS = {
+  famiana: ["푸꾸옥/숙소/파미아나그린빌라_01.jpg"],
+  bestwestern: ["푸꾸옥/숙소/베스트웨스턴프리미어소나씨_00.jpg", "푸꾸옥/숙소/베스트웨스턴프리미어소나씨_01.jpg", "푸꾸옥/숙소/베스트웨스턴프리미어소나씨_02.jpg", "푸꾸옥/숙소/베스트웨스턴프리미어소나씨_03.jpg", "푸꾸옥/숙소/베스트웨스턴프리미어소나씨_04.jpg", "푸꾸옥/숙소/베스트웨스턴프리미어소나씨_05.jpg", "푸꾸옥/숙소/베스트웨스턴프리미어소나씨_06.jpg", "푸꾸옥/숙소/베스트웨스턴프리미어소나씨_07.jpg"],
+  moevenpick: ["푸꾸옥/숙소/모벤픽리조트웨이벌리_01.jpg", "푸꾸옥/숙소/모벤픽리조트웨이벌리_02.jpg", "푸꾸옥/숙소/모벤픽리조트웨이벌리_03.jpg", "푸꾸옥/숙소/모벤픽리조트웨이벌리_04.jpg", "푸꾸옥/숙소/모벤픽리조트웨이벌리_05.jpg", "푸꾸옥/숙소/모벤픽빌라앤레지던스_01.JPG", "푸꾸옥/숙소/모벤픽빌라앤레지던스_02.JPG", "푸꾸옥/숙소/모벤픽빌라앤레지던스_03.JPG", "푸꾸옥/숙소/모벤픽빌라앤레지던스_04_개인풀빌라.JPG"],
 };
 
 // 국가별 여행 사진 (img/[국가폴더]/ 기준, 스팟 단위로 그룹)
@@ -731,8 +743,17 @@ Object.entries(COUNTRIES).forEach(([key, c], i) => {
   }).join("");
 
   const stayHtml = c.stays.length
-    ? c.stays.map(s => `
+    ? c.stays.map(s => {
+        const stayPhotos = s.photoKey ? STAY_PHOTOS[s.photoKey] : null;
+        const links = s.links || (s.link ? [{ url: s.link, label: s.linkLabel || "링크 보기" }] : []);
+        return `
         <div class="flight-card">
+          ${stayPhotos && stayPhotos.length ? `
+            <div class="photo-thumb stay-thumb" data-stay="${s.photoKey}">
+              <img src="img/${stayPhotos[0]}" loading="lazy" alt="">
+              <span class="count-badge">${stayPhotos.length}장</span>
+            </div>
+          ` : ""}
           <div class="flight-head">
             <span class="airline">${s.area ? `<span class="area-tag">${s.area}</span> ` : ""}${s.name}</span>
             <span class="price">${s.price || ""}</span>
@@ -741,10 +762,11 @@ Object.entries(COUNTRIES).forEach(([key, c], i) => {
             ${s.highlight ? `<div class="flight-time highlight-note">${s.highlight}</div>` : ""}
             ${s.note ? `<div class="flight-time">${s.note}</div>` : ""}
             ${(s.rooms || []).map(r => `<div class="flight-time"><b>${r.name}</b> · ${r.detail}</div>`).join("")}
-            ${s.link ? `<div class="flight-time"><a href="${s.link}" target="_blank" rel="noopener">🔗 ${s.linkLabel || "링크 보기"}</a></div>` : ""}
+            ${links.map(l => `<div class="flight-time"><a href="${l.url}" target="_blank" rel="noopener">🔗 ${l.label}</a></div>`).join("")}
           </div>
         </div>
-      `).join("")
+      `;
+      }).join("")
     : `<div class="placeholder-box">🏨 ${c.label} 숙소 정보는 아직 준비 중이에요. 정리되면 여기에 추가할게요.</div>`;
 
   const stayAreaHtml = c.stayAreaNote ? `
@@ -852,6 +874,11 @@ sectionsWrap.addEventListener("click", e => {
   if (card) {
     const group = PHOTOS[card.dataset.key][Number(card.dataset.group)];
     openLightbox(group.images, 0);
+    return;
+  }
+  const stayThumb = e.target.closest(".stay-thumb");
+  if (stayThumb) {
+    openLightbox(STAY_PHOTOS[stayThumb.dataset.stay], 0);
   }
 });
 
