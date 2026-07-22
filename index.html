@@ -388,6 +388,8 @@
     cursor:zoom-in;
   }
   .thumb-slider.tall .track img{ height:400px; }
+  .thumb-slider.small{ border-radius:8px; margin:6px 0; }
+  .thumb-slider.small .track img{ height:110px; }
   .thumb-slider .arrow{
     position:absolute;
     top:50%;
@@ -584,8 +586,10 @@
 </header>
 
 <nav class="tabbar" id="tabbar">
-  <button class="country-btn active" data-country="all">📊 전체 비교<span class="em">한눈에 보기</span></button>
-  <button class="country-btn" data-country="phuket">🇹🇭 푸켓<span class="em">태국</span></button>
+  <!-- 전체 비교 탭: 내용 정리 후 다시 노출 예정
+  <button class="country-btn" data-country="all">📊 전체 비교<span class="em">한눈에 보기</span></button>
+  -->
+  <button class="country-btn active" data-country="phuket">🇹🇭 푸켓<span class="em">태국</span></button>
   <button class="country-btn" data-country="bohol">🇵🇭 보홀<span class="em">필리핀</span></button>
   <button class="country-btn" data-country="phuquoc">🇻🇳 푸꾸옥<span class="em">베트남</span></button>
 </nav>
@@ -594,8 +598,8 @@
 
   <div id="country-sections"></div>
 
-  <!-- 국가별 한눈에 비교 -->
-  <section class="country active" id="country-all">
+  <!-- 국가별 한눈에 비교 (탭에서 숨김 처리됨, 아래 section은 유지) -->
+  <section class="country" id="country-all">
     <h3 class="section-title">📊 국가별 한눈에 비교</h3>
     <div class="compare-scroll">
       <table class="compare">
@@ -688,15 +692,16 @@ const COUNTRIES = {
       ],
     },
     stays: [
-      { name: "헤난 리조트 알로나비치", highlight: "5성급 · 헤난 계열 리조트", photoKey: "henannAlona",
+      { name: "헤난 리조트", highlight: "5성급 · 헤난 계열 · 알로나비치 · 프리미어 코스트 부대시설 공용", photoKey: "henannAlona",
         rooms: [
-          { name: "프레지덴셜 스위트", detail: "침실2/욕실2/거실+주방1 · 킹1 or 싱글1&퀸1 · 100만원" },
-          { name: "패밀리룸", detail: "침실2 · 싱글1&퀸1 or 싱글2 · 52만원" },
-        ] },
-      { name: "헤난 프리미어 코스트 리조트", highlight: "5성급 · 헤난 계열 리조트", photoKey: "henannPremier",
-        rooms: [
-          { name: "패밀리 비치뷰룸", detail: "오션뷰 · 침실2 · 싱글1&퀸1 or 싱글2 · 75만원" },
-          { name: "프리미어룸 (액세스풀)", detail: "킹or퀸1 + 싱글1 (체크인 시 배정) · 발코니에서 바로 수영장 이용 가능 · 42만원" },
+          { name: "프레지덴셜 스위트 (알로나비치)", detail: "침실2/욕실2/거실+주방1 · 킹1 or 싱글1&퀸1 · 100만원",
+            photos: ["보홀/숙소/헤난알로나비치_프레지덴셜스위트_01.webp", "보홀/숙소/헤난알로나비치_프레지덴셜스위트_02.webp", "보홀/숙소/헤난알로나비치_프레지덴셜스위트_03.webp"] },
+          { name: "패밀리룸 (알로나비치)", detail: "침실2 · 싱글1&퀸1 or 싱글2 · 52만원",
+            photos: ["보홀/숙소/헤난알로나비치_패밀리룸_01.webp"] },
+          { name: "패밀리 비치뷰룸 (프리미어 코스트)", detail: "오션뷰 · 침실2 · 싱글1&퀸1 or 싱글2 · 75만원",
+            photos: ["보홀/숙소/헤난프리미어코스트_패밀리비치뷰룸_01.webp", "보홀/숙소/헤난프리미어코스트_패밀리비치뷰룸_02.webp"] },
+          { name: "프리미어룸 (프리미어 코스트, 액세스풀)", detail: "킹or퀸1 + 싱글1 (체크인 시 배정) · 발코니에서 바로 수영장 이용 가능 · 42만원",
+            photos: ["보홀/숙소/헤난프리미어코스트_프리미어룸_01.webp", "보홀/숙소/헤난프리미어코스트_프리미어룸_02.webp"] },
         ] },
     ],
   },
@@ -772,8 +777,7 @@ const STAY_PHOTOS = {
   famiana: ["푸꾸옥/숙소/파미아나그린빌라_01.jpg"],
   bestwestern: ["푸꾸옥/숙소/베스트웨스턴프리미어소나씨_00.jpg", "푸꾸옥/숙소/베스트웨스턴프리미어소나씨_01.jpg", "푸꾸옥/숙소/베스트웨스턴프리미어소나씨_02.jpg", "푸꾸옥/숙소/베스트웨스턴프리미어소나씨_03.jpg", "푸꾸옥/숙소/베스트웨스턴프리미어소나씨_04.jpg", "푸꾸옥/숙소/베스트웨스턴프리미어소나씨_05.jpg", "푸꾸옥/숙소/베스트웨스턴프리미어소나씨_06.jpg", "푸꾸옥/숙소/베스트웨스턴프리미어소나씨_07.jpg"],
   moevenpick: ["푸꾸옥/숙소/모벤픽리조트웨이벌리_01.jpg", "푸꾸옥/숙소/모벤픽리조트웨이벌리_02.jpg", "푸꾸옥/숙소/모벤픽리조트웨이벌리_03.jpg", "푸꾸옥/숙소/모벤픽리조트웨이벌리_04.jpg", "푸꾸옥/숙소/모벤픽리조트웨이벌리_05.jpg", "푸꾸옥/숙소/모벤픽빌라앤레지던스_01.JPG", "푸꾸옥/숙소/모벤픽빌라앤레지던스_02.JPG", "푸꾸옥/숙소/모벤픽빌라앤레지던스_03.JPG", "푸꾸옥/숙소/모벤픽빌라앤레지던스_04_개인풀빌라.JPG"],
-  henannAlona: ["보홀/숙소/헤난알로나비치_01.webp", "보홀/숙소/헤난알로나비치_02.webp", "보홀/숙소/헤난알로나비치_03.webp", "보홀/숙소/헤난알로나비치_프레지덴셜스위트_01.webp", "보홀/숙소/헤난알로나비치_프레지덴셜스위트_02.webp", "보홀/숙소/헤난알로나비치_프레지덴셜스위트_03.webp", "보홀/숙소/헤난알로나비치_패밀리룸_01.webp"],
-  henannPremier: ["보홀/숙소/헤난프리미어코스트_패밀리비치뷰룸_01.webp", "보홀/숙소/헤난프리미어코스트_패밀리비치뷰룸_02.webp", "보홀/숙소/헤난프리미어코스트_프리미어룸_01.webp", "보홀/숙소/헤난프리미어코스트_프리미어룸_02.webp"],
+  henannAlona: ["보홀/숙소/헤난알로나비치_01.webp", "보홀/숙소/헤난알로나비치_02.webp", "보홀/숙소/헤난알로나비치_03.webp"],
 };
 
 // 국가별 여행 사진 (img/[국가폴더]/ 기준, 스팟 단위로 그룹)
@@ -800,12 +804,21 @@ function minPrice(flights){
 const sectionsWrap = document.getElementById("country-sections");
 const compareBody = document.getElementById("compare-body");
 
+// 룸타입별 사진 슬라이더는 렌더링 시점에 id만 발급하고, 전체 렌더 후 일괄 초기화
+const roomSliderRegistry = [];
+function roomSliderHtml(photos){
+  if (!photos || !photos.length) return "";
+  const id = `room-slider-${roomSliderRegistry.length}`;
+  roomSliderRegistry.push({ id, photos });
+  return `<div class="thumb-slider small" id="${id}"></div>`;
+}
+
 Object.entries(COUNTRIES).forEach(([key, c], i) => {
   const lowest = minPrice(c.flights);
 
   // 국가별 상세 섹션
   const section = document.createElement("section");
-  section.className = "country";
+  section.className = "country" + (i === 0 ? " active" : "");
   section.id = "country-" + key;
 
   const renderOption = (o, oi, total) => `
@@ -852,7 +865,10 @@ Object.entries(COUNTRIES).forEach(([key, c], i) => {
           <div class="flight-body">
             ${s.highlight ? `<div class="flight-time highlight-note">${s.highlight}</div>` : ""}
             ${s.note ? `<div class="flight-time">${s.note}</div>` : ""}
-            ${(s.rooms || []).map(r => `<div class="flight-time"><b>${r.name}</b> · ${r.detail}</div>`).join("")}
+            ${(s.rooms || []).map(r => `
+              <div class="flight-time"><b>${r.name}</b> · ${r.detail}</div>
+              ${roomSliderHtml(r.photos)}
+            `).join("")}
             ${(s.features || []).length ? `
               <div class="stay-features">
                 ${s.features.map(f => `<div class="stay-feature-item">✓ ${f}</div>`).join("")}
@@ -1033,6 +1049,10 @@ document.querySelectorAll(".thumb-slider[data-key]").forEach(el => {
 });
 document.querySelectorAll(".thumb-slider[data-stay]").forEach(el => {
   buildSlider(el, STAY_PHOTOS[el.dataset.stay]);
+});
+roomSliderRegistry.forEach(({ id, photos }) => {
+  const el = document.getElementById(id);
+  if (el) buildSlider(el, photos);
 });
 
 // 라이트박스 (사진 크게 보기)
