@@ -248,6 +248,19 @@
     vertical-align:middle;
   }
   .highlight-note{ color:var(--accent) !important; font-weight:600; }
+  .stay-features{
+    margin-top:8px;
+    padding:8px 10px;
+    background:var(--sea-100);
+    border-radius:8px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .stay-feature-item{
+    font-size:.78rem;
+    color:var(--sea-900);
+  }
   .extra-options{ display:none; }
   .extra-options.show{ display:block; }
   .more-btn{
@@ -710,17 +723,34 @@ const COUNTRIES = {
       { area: "중부(공항)", desc: "마사지샵, 식당, 즈엉동 야시장 접근성 좋음, 3인 이하의 경우 교통이 짧고 주변 편의시설이 많아서 추천" },
     ],
     stays: [
-      { name: "파미아나 그린 빌라", area: "중부", price: "63만원", note: "싱글1 · 퀸1 · 풀뷰 트리플 (4박 기준)", link: "https://blog.naver.com/darrr_byyy/224278489215", linkLabel: "블로그 후기", photoKey: "famiana" },
-      { name: "베스트 웨스턴 프리미어 소나씨 푸꾸옥", area: "중부", price: "60만원", note: "이그제큐티브 가든뷰 스위트 · 퀸2 · 방2/거실1/화장실2 · 침대 추가 요청 가능", link: "https://blog.naver.com/adore323/223907860745", linkLabel: "블로그 후기", photoKey: "bestwestern" },
-      { name: "모벤픽 리조트 푸꾸옥", area: "북부", highlight: "숙소에만 있기 좋아보임 · 웨이벌리·빌라&레지던스 숙소동만 다르고 부대시설은 공용", note: "침대 추가 요청 가능", photoKey: "moevenpick",
+      { name: "파미아나 그린 빌라", area: "중부", link: "https://blog.naver.com/darrr_byyy/224278489215", linkLabel: "블로그 후기", photoKey: "famiana",
+        rooms: [
+          { name: "풀뷰 트리플", detail: "싱글1 · 퀸1 · 63만원" },
+        ],
+        features: ["조식 아쉬움"] },
+      { name: "베스트 웨스턴 프리미어 소나씨 푸꾸옥", area: "중부", link: "https://blog.naver.com/adore323/223907860745", linkLabel: "블로그 후기", photoKey: "bestwestern",
+        rooms: [
+          { name: "이그제큐티브 가든뷰 스위트", detail: "퀸2 (침대 추가 요청 가능) · 방2/거실1/화장실2 · 60만원" },
+        ],
+        features: [
+          "길건너면 바로 소나시 야시장이고 음식점, 마사지샵 가까움",
+          "바로 앞 편의점 있음, 킹콩마트 소나시점 도보 10분",
+          "조식에 김밥, 비빔밥 같은 한식메뉴 있음 · 즉석 쌀국수 맛있음",
+        ] },
+      { name: "모벤픽 리조트 푸꾸옥", area: "북부", highlight: "숙소에만 있기 좋아보임 · 웨이벌리·빌라&레지던스 숙소동만 다르고 부대시설은 공용", photoKey: "moevenpick",
         links: [
           { url: "https://blog.naver.com/nhh511/224349877091", label: "웨이벌리 후기" },
           { url: "https://blog.naver.com/gamseongtae/224246063408", label: "빌라&레지던스 후기" },
         ],
         rooms: [
           { name: "디럭스 패밀리룸 (웨이벌리)", detail: "오션뷰 · 퀸2 · 70만원" },
-          { name: "패밀리 씨뷰 스튜디오 (빌라&레지던스)", detail: "킹2 · 방2/욕실2 · 60만원" },
-          { name: "풀빌라 레이크뷰 (빌라&레지던스)", detail: "거실1/침실2/욕실2 · 킹2 · 개인풀 있음 · 80만원" },
+          { name: "패밀리 씨뷰 스튜디오 (빌라&레지던스)", detail: "킹2 (침대 추가 요청 가능) · 방2/욕실2 · 60만원" },
+          { name: "풀빌라 레이크뷰 (빌라&레지던스)", detail: "거실1/침실2/욕실2 · 킹2 (침대 추가 요청 가능) · 개인풀 있음 · 80만원" },
+        ],
+        features: [
+          "조식 쌀국수, 코코넛요거트 맛있음 (웨이벌리)",
+          "초콜릿아워 있음 - 간식타임 (웨이벌리)",
+          "데일리 프로그램 요일별로 다양함",
         ] },
     ],
   },
@@ -810,6 +840,11 @@ Object.entries(COUNTRIES).forEach(([key, c], i) => {
             ${s.highlight ? `<div class="flight-time highlight-note">${s.highlight}</div>` : ""}
             ${s.note ? `<div class="flight-time">${s.note}</div>` : ""}
             ${(s.rooms || []).map(r => `<div class="flight-time"><b>${r.name}</b> · ${r.detail}</div>`).join("")}
+            ${(s.features || []).length ? `
+              <div class="stay-features">
+                ${s.features.map(f => `<div class="stay-feature-item">✓ ${f}</div>`).join("")}
+              </div>
+            ` : ""}
             ${links.map(l => `<div class="flight-time"><a href="${l.url}" target="_blank" rel="noopener">🔗 ${l.label}</a></div>`).join("")}
           </div>
         </div>
