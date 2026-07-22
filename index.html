@@ -237,6 +237,17 @@
   }
   .dir-out{ background:var(--accent-bg); color:var(--ok); }
   .dir-ret{ background:#eaf1fb; color:var(--sea-500); }
+  .area-tag{
+    display:inline-block;
+    font-size:.68rem;
+    font-weight:700;
+    padding:2px 7px;
+    border-radius:6px;
+    background:rgba(255,255,255,.2);
+    margin-right:4px;
+    vertical-align:middle;
+  }
+  .highlight-note{ color:var(--accent) !important; font-weight:600; }
   .flight-time a{
     color:var(--sea-500);
     font-weight:600;
@@ -566,6 +577,7 @@ const COUNTRIES = {
     stays: [
       { name: "코코넛 빌리지 리조트", price: "디럭스 풀뷰 1박 18만원대 (2인 1실) × 2실", note: "빠통비치 근처 · 3인이라 방 2개 필요 · 2/24~2/27 3박 기준", link: "https://blog.naver.com/a0024018/224136414857", linkLabel: "블로그 후기" },
       { name: "부라사리 푸켓 리조트", price: "", note: "빠통비치 근처", link: "https://blog.naver.com/faitrever/224102119700", linkLabel: "블로그 후기" },
+      { name: "그레이스랜드 리조트", price: "", note: "", link: "" },
     ],
   },
   bohol: {
@@ -624,9 +636,19 @@ const COUNTRIES = {
       ],
     },
     stayRefNote: { text: "푸꾸옥 숙소는 이 블로그에 잘 정리되어 있음", link: "https://blog.naver.com/mymoo-/224247917446" },
+    stayAreaNote: [
+      { area: "북부", desc: "리조트 자체 만족도 높음, 오션뷰나 대형리조트, 조용하게 휴양하는 분위기이나 상권과 거리가 멀어서 숙소에서만 휴양을 즐길 경우 추천" },
+      { area: "중부(공항)", desc: "마사지샵, 식당, 즈엉동 야시장 접근성 좋음, 3인 이하의 경우 교통이 짧고 주변 편의시설이 많아서 추천" },
+    ],
     stays: [
-      { name: "파미아나 그린빌라", price: "", note: "", link: "", linkLabel: "" },
-      { name: "발렌티나 리조트 앤 스파", price: "", note: "", link: "https://www.agoda.com/sp/dADAx2HuR5s", linkLabel: "아고다에서 확인" },
+      { name: "파미아나 그린 빌라", area: "중부", price: "63만원", note: "싱글1 · 퀸1 · 풀뷰 트리플 (4박 기준)", link: "https://blog.naver.com/darrr_byyy/224278489215", linkLabel: "블로그 후기" },
+      { name: "베스트 웨스턴 프리미어 소나씨 푸꾸옥", area: "중부", price: "60만원", note: "이그제큐티브 가든뷰 스위트 · 퀸2 · 방2/거실1/화장실2 · 침대 추가 요청 가능", link: "https://blog.naver.com/adore323/223907860745", linkLabel: "블로그 후기" },
+      { name: "모벤픽 리조트 웨이벌리 푸꾸옥", area: "북부", price: "70만원", note: "디럭스 패밀리룸 · 오션뷰 · 퀸2", link: "https://blog.naver.com/nhh511/224349877091", linkLabel: "블로그 후기" },
+      { name: "모벤픽 빌라 & 레지던스 푸꾸옥", highlight: "😍 숙소에만 있어도 좋아보임", note: "침대 추가 요청 가능", link: "https://blog.naver.com/gamseongtae/224246063408", linkLabel: "블로그 후기",
+        rooms: [
+          { name: "패밀리 씨뷰 스튜디오", detail: "킹2 · 방2/욕실2 · 60만원" },
+          { name: "풀빌라 레이크뷰", detail: "거실1/침실2/욕실2 · 킹2 · 개인풀 있음 · 80만원" },
+        ] },
     ],
   },
 };
@@ -684,14 +706,26 @@ Object.entries(COUNTRIES).forEach(([key, c], i) => {
   const stayHtml = c.stays.length
     ? c.stays.map(s => `
         <div class="flight-card">
-          <div class="flight-head"><span class="airline">${s.name}</span><span class="price">${s.price || ""}</span></div>
+          <div class="flight-head">
+            <span class="airline">${s.area ? `<span class="area-tag">${s.area}</span> ` : ""}${s.name}</span>
+            <span class="price">${s.price || ""}</span>
+          </div>
           <div class="flight-body">
+            ${s.highlight ? `<div class="flight-time highlight-note">${s.highlight}</div>` : ""}
             ${s.note ? `<div class="flight-time">${s.note}</div>` : ""}
+            ${(s.rooms || []).map(r => `<div class="flight-time"><b>${r.name}</b> · ${r.detail}</div>`).join("")}
             ${s.link ? `<div class="flight-time"><a href="${s.link}" target="_blank" rel="noopener">🔗 ${s.linkLabel || "링크 보기"}</a></div>` : ""}
           </div>
         </div>
       `).join("")
     : `<div class="placeholder-box">🏨 ${c.label} 숙소 정보는 아직 준비 중이에요. 정리되면 여기에 추가할게요.</div>`;
+
+  const stayAreaHtml = c.stayAreaNote ? `
+    <div class="country-summary" style="margin-bottom:12px">
+      <b>📍 숙소 지역 참고</b><br>
+      ${c.stayAreaNote.map(a => `<div style="margin-top:6px"><b>${a.area}</b> - ${a.desc}</div>`).join("")}
+    </div>
+  ` : "";
 
   const featureHtml = `
     <div class="feature-box">
@@ -739,6 +773,7 @@ Object.entries(COUNTRIES).forEach(([key, c], i) => {
     <h3 class="section-title">✈️ 항공권</h3>
     <div class="flight-list">${flightCards}</div>
     <h3 class="section-title">🏨 숙소</h3>
+    ${stayAreaHtml}
     ${c.stayRefNote ? `<p class="compare-note" style="margin:0 0 10px">📎 ${c.stayRefNote.text} · <a href="${c.stayRefNote.link}" target="_blank" rel="noopener">블로그 보기</a></p>` : ""}
     <div class="flight-list">${stayHtml}</div>
   `;
