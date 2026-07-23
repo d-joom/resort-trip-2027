@@ -248,6 +248,19 @@
     vertical-align:middle;
   }
   .highlight-note{ color:var(--accent) !important; font-weight:600; }
+  .room-row{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    padding:8px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .room-row:last-child{ border-bottom:none; }
+  .room-info{ flex:1; min-width:0; }
+  .room-info .room-name{ font-weight:700; font-size:.88rem; }
+  .room-info .room-detail{ font-size:.8rem; color:var(--muted); margin-top:3px; }
+  .room-photos{ flex:0 0 120px; width:120px; }
+  .room-photos .thumb-slider{ border-radius:8px; }
   .stay-features{
     margin-top:8px;
     padding:8px 10px;
@@ -389,8 +402,8 @@
   }
   .thumb-slider.tall .track img{ height:400px; }
   .thumb-slider[data-stay="henannAlona"] .track img{ height:520px; }
-  .thumb-slider.small{ border-radius:8px; margin:6px 0; }
-  .thumb-slider.small .track img{ height:220px; }
+  .thumb-slider.small{ border-radius:8px; }
+  .thumb-slider.small .track img{ height:100px; }
   .thumb-slider .arrow{
     position:absolute;
     top:50%;
@@ -880,17 +893,22 @@ Object.entries(COUNTRIES).forEach(([key, c], i) => {
         const links = s.links || (s.link ? [{ url: s.link, label: s.linkLabel || "링크 보기" }] : []);
         return `
         <div class="flight-card">
-          ${stayPhotos && stayPhotos.length ? `<div class="thumb-slider tall" data-stay="${s.photoKey}"></div>` : ""}
           <div class="flight-head">
             <span class="airline">${s.area ? `<span class="area-tag">${s.area}</span> ` : ""}${s.name}</span>
             <span class="price">${s.price || ""}</span>
           </div>
+          ${stayPhotos && stayPhotos.length ? `<div class="thumb-slider tall" data-stay="${s.photoKey}"></div>` : ""}
           <div class="flight-body">
             ${s.highlight ? `<div class="flight-time highlight-note">${s.highlight}</div>` : ""}
             ${s.note ? `<div class="flight-time">${s.note}</div>` : ""}
             ${(s.rooms || []).map(r => `
-              <div class="flight-time"><b>${r.name}</b>${r.detail ? ` · ${r.detail}` : ""}</div>
-              ${roomSliderHtml(r.photos)}
+              <div class="room-row">
+                <div class="room-info">
+                  <div class="room-name">${r.name}</div>
+                  ${r.detail ? `<div class="room-detail">${r.detail}</div>` : ""}
+                </div>
+                ${r.photos && r.photos.length ? `<div class="room-photos">${roomSliderHtml(r.photos)}</div>` : ""}
+              </div>
             `).join("")}
             ${(s.features || []).length ? `
               <div class="stay-features">
