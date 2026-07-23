@@ -843,7 +843,26 @@ const PHOTOS = {
     { name: "야시장", desc: "빠통비치 근처 야시장 & 먹거리", images: ["푸켓/야시장_01.png", "푸켓/야시장_02.jpg", "푸켓/야시장_03.jpg", "푸켓/야시장_04.jpg", "푸켓/야시장_05.jpg"] },
   ],
   bohol: [
-    { name: "발리카삭 투어", desc: "바다거북과 함께하는 스노클링 명소", images: ["보홀/발리카삭_01.jpg", "보홀/발리카삭_02.jpg", "보홀/발리카삭_03.jpg", "보홀/발리카삭_04.jpg", "보홀/발리카삭_05.jpg", "보홀/발리카삭_06.jpg"] },
+    { name: "발리카삭 투어", desc: "바다거북과 함께하는 스노클링 명소", images: ["보홀/발리카삭_00.jpg", "보홀/발리카삭_01.jpg", "보홀/발리카삭_02.jpg", "보홀/발리카삭_03.jpg", "보홀/발리카삭_04.jpg", "보홀/발리카삭_05.jpg", "보홀/발리카삭_06.jpg", "보홀/발리카삭_07.jpg", "보홀/발리카삭_08.jpg", "보홀/발리카삭_09.jpg", "보홀/발리카삭_10.jpg"] },
+    { name: "나팔링", desc: "", images: ["보홀/나팔링_00.jpg", "보홀/나팔링_01.jpg", "보홀/나팔링_02.jpg", "보홀/나팔링_03.jpg"] },
+    { name: "안경원숭이 투어", desc: "초소형 타르시어 관람", images: ["보홀/육상투어_안경원숭이_01.JPG", "보홀/육상투어_안경원숭이_02.JPG", "보홀/육상투어_안경원숭이_03.JPG", "보홀/육상투어_안경원숭이_04.JPG"] },
+    { name: "초콜릿힐", desc: "보홀 대표 육상 관광지", images: ["보홀/육상투어_초콜릿힐_00.JPG", "보홀/육상투어_초콜릿힐_01.JPG", "보홀/육상투어_초콜릿힐_02.JPG", "보홀/육상투어_초콜릿힐_03.JPG"] },
+    { name: "히낙다난 동굴", desc: "", images: ["보홀/히낙다난동굴_00.png", "보홀/히낙다난동굴_01.png", "보홀/히낙다난동굴_02.png"] },
+  ],
+  phuquoc: [],
+};
+
+// 국가별 먹거리/맛집 사진
+const FOOD = {
+  phuket: [],
+  bohol: [
+    { name: "졸리비", desc: "필리핀 대표 패스트푸드", images: ["보홀/먹거리_졸리비.jpg"] },
+    { name: "판데살빵", desc: "필리핀 전통 빵", images: ["보홀/먹거리_판데살빵.jpg"] },
+    { name: "포테이토코너", desc: "감자 간식 체인", images: ["보홀/먹거리_포테이토코너.jpg"] },
+    { name: "할로망고", desc: "필리핀 빙수 디저트", images: ["보홀/먹거리_할로망고.jpg"] },
+    { name: "게리스 그릴", desc: "그릴 레스토랑", images: ["보홀/식당_게리스그릴_02.jpg", "보홀/식당_게리스그릴_03.jpg"] },
+    { name: "레드 크랩", desc: "해산물 레스토랑", images: ["보홀/식당_레드크랩_01.jpg"] },
+    { name: "빠우", desc: "", images: ["보홀/식당_빠우_01.jpg"] },
   ],
   phuquoc: [],
 };
@@ -991,11 +1010,28 @@ Object.entries(COUNTRIES).forEach(([key, c], i) => {
     </div>
   ` : "";
 
+  const foodGroups = FOOD[key] || [];
+  const foodHtml = foodGroups.length ? `
+    <h3 class="section-title">🍽️ 먹거리 &amp; 맛집</h3>
+    <div class="photo-grid">
+      ${foodGroups.map((g, gi) => `
+        <div class="photo-card">
+          <div class="thumb-slider" data-source="food" data-key="${key}" data-group="${gi}"></div>
+          <div class="photo-info">
+            <div class="photo-name">${g.name}</div>
+            <div class="photo-desc">${g.desc}</div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  ` : "";
+
   section.innerHTML = `
     <div class="country-summary">${c.flag} <b>${c.label} (${c.country})</b> · ${c.flightNote} · 항공권 최저 ${lowest}만원부터</div>
     <h3 class="section-title">🌴 여행지 특징</h3>
     ${featureHtml}
     ${photoHtml}
+    ${foodHtml}
     <h3 class="section-title">✈️ 항공권</h3>
     <div class="flight-list">${flightCards}</div>
     <h3 class="section-title">🏨 숙소</h3>
@@ -1131,7 +1167,8 @@ function buildSlider(container, images){
 }
 
 document.querySelectorAll(".thumb-slider[data-key]").forEach(el => {
-  const group = PHOTOS[el.dataset.key][Number(el.dataset.group)];
+  const source = el.dataset.source === "food" ? FOOD : PHOTOS;
+  const group = source[el.dataset.key][Number(el.dataset.group)];
   buildSlider(el, group.images);
 });
 document.querySelectorAll(".thumb-slider[data-stay]").forEach(el => {
