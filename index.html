@@ -376,6 +376,30 @@
     background:#f8fafb;
   }
 
+  .subtab-bar{
+    display:flex;
+    gap:6px;
+    margin-bottom:14px;
+  }
+  .subtab-btn{
+    flex:1;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--muted);
+    padding:9px 8px;
+    border-radius:10px;
+    font-size:.82rem;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .subtab-btn.active{
+    background:var(--sea-500);
+    border-color:var(--sea-500);
+    color:#fff;
+  }
+  .subtab-panel{ display:none; }
+  .subtab-panel.active{ display:block; }
+
   .photo-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -872,6 +896,18 @@ const FOOD = {
   phuquoc: [],
 };
 
+function photoGridItems(groups, key, source){
+  return groups.map((g, gi) => `
+    <div class="photo-card">
+      <div class="thumb-slider" ${source === "food" ? 'data-source="food" ' : ""}data-key="${key}" data-group="${gi}"></div>
+      <div class="photo-info">
+        <div class="photo-name">${g.name}</div>
+        <div class="photo-desc">${g.desc}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
 function stars(n){
   return `<span class="star-rating" title="${n}/5"><span class="star-fill">${"★".repeat(n)}</span><span class="star-empty">${"★".repeat(5 - n)}</span></span>`;
 }
@@ -1000,43 +1036,35 @@ Object.entries(COUNTRIES).forEach(([key, c], i) => {
   `;
 
   const photoGroups = PHOTOS[key] || [];
-  const photoHtml = photoGroups.length ? `
-    <h3 class="section-title">📸 여행 사진</h3>
-    <div class="photo-grid">
-      ${photoGroups.map((g, gi) => `
-        <div class="photo-card">
-          <div class="thumb-slider" data-key="${key}" data-group="${gi}"></div>
-          <div class="photo-info">
-            <div class="photo-name">${g.name}</div>
-            <div class="photo-desc">${g.desc}</div>
-          </div>
-        </div>
-      `).join("")}
-    </div>
-  ` : "";
-
   const foodGroups = FOOD[key] || [];
-  const foodHtml = foodGroups.length ? `
-    <h3 class="section-title">🍽️ 먹거리 &amp; 맛집</h3>
-    <div class="photo-grid">
-      ${foodGroups.map((g, gi) => `
-        <div class="photo-card">
-          <div class="thumb-slider" data-source="food" data-key="${key}" data-group="${gi}"></div>
-          <div class="photo-info">
-            <div class="photo-name">${g.name}</div>
-            <div class="photo-desc">${g.desc}</div>
-          </div>
-        </div>
-      `).join("")}
-    </div>
+  const hasPhoto = photoGroups.length > 0;
+  const hasFood = foodGroups.length > 0;
+
+  const exploreHtml = (hasPhoto || hasFood) ? `
+    <h3 class="section-title">🧭 관광지 &amp; 먹거리</h3>
+    ${(hasPhoto && hasFood) ? `
+      <div class="subtab-bar">
+        <button class="subtab-btn active" data-target="explore-photo-${key}">📸 관광지</button>
+        <button class="subtab-btn" data-target="explore-food-${key}">🍽️ 먹거리&amp;맛집</button>
+      </div>
+    ` : ""}
+    ${hasPhoto ? `
+      <div class="subtab-panel active" id="explore-photo-${key}">
+        <div class="photo-grid">${photoGridItems(photoGroups, key, "photos")}</div>
+      </div>
+    ` : ""}
+    ${hasFood ? `
+      <div class="subtab-panel${hasPhoto ? "" : " active"}" id="explore-food-${key}">
+        <div class="photo-grid">${photoGridItems(foodGroups, key, "food")}</div>
+      </div>
+    ` : ""}
   ` : "";
 
   section.innerHTML = `
     <div class="country-summary">${c.flag} <b>${c.label} (${c.country})</b> · ${c.flightNote} · 항공권 최저 ${lowest}만원부터</div>
     <h3 class="section-title">🌴 여행지 특징</h3>
     ${featureHtml}
-    ${photoHtml}
-    ${foodHtml}
+    ${exploreHtml}
     <h3 class="section-title">✈️ 항공권</h3>
     <div class="flight-list">${flightCards}</div>
     <h3 class="section-title">🏨 숙소</h3>
@@ -1077,6 +1105,16 @@ document.getElementById("tabbar").addEventListener("click", e => {
   if (!btn) return;
   document.querySelectorAll(".country-btn").forEach(b => b.classList.toggle("active", b === btn));
   document.querySelectorAll("section.country").forEach(s => s.classList.toggle("active", s.id === "country-" + btn.dataset.country));
+});
+
+// 관광지 / 먹거리 서브탭 전환
+sectionsWrap.addEventListener("click", e => {
+  const subtabBtn = e.target.closest(".subtab-btn");
+  if (!subtabBtn) return;
+  const bar = subtabBtn.closest(".subtab-bar");
+  bar.querySelectorAll(".subtab-btn").forEach(b => b.classList.toggle("active", b === subtabBtn));
+  const section = subtabBtn.closest("section.country");
+  section.querySelectorAll(".subtab-panel").forEach(p => p.classList.toggle("active", p.id === subtabBtn.dataset.target));
 });
 
 // 항공권 옵션 슬라이더 초기화 (옵션 여러 개인 경우 좌우로 넘겨보기)
