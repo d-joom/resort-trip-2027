@@ -215,17 +215,6 @@
     border-bottom:1px dashed var(--line);
   }
   .flight-time:last-child{ border-bottom:none; }
-  .flight-option + .flight-option{
-    margin-top:10px;
-    padding-top:10px;
-    border-top:1px solid var(--line);
-  }
-  .opt-label{
-    font-size:.72rem;
-    font-weight:700;
-    color:var(--sea-500);
-    margin-bottom:4px;
-  }
   .dir{
     display:inline-block;
     font-size:.68rem;
@@ -274,21 +263,50 @@
     font-size:.78rem;
     color:var(--sea-900);
   }
-  .extra-options{ display:none; }
-  .extra-options.show{ display:block; }
-  .more-btn{
-    width:100%;
-    margin-top:8px;
-    padding:8px;
-    border:1px dashed #cbd8e0;
-    background:#f8fafb;
-    border-radius:8px;
-    font-size:.78rem;
-    color:var(--sea-500);
-    font-weight:600;
-    cursor:pointer;
+  .option-slider .track{
+    display:flex;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
   }
-  .more-btn:hover{ background:var(--sea-100); }
+  .option-slider .track::-webkit-scrollbar{ display:none; height:0; }
+  .option-slider .option-slide{
+    flex:0 0 100%;
+    scroll-snap-align:center;
+    box-sizing:border-box;
+  }
+  .option-nav{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    margin-top:6px;
+  }
+  .opt-arrow{
+    width:26px;
+    height:26px;
+    border:1px solid var(--line);
+    border-radius:50%;
+    background:#fff;
+    color:var(--sea-500);
+    font-size:.95rem;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .opt-arrow:hover{ background:var(--sea-100); }
+  .opt-arrow:disabled{ opacity:.3; cursor:default; background:#fff; }
+  .opt-count{
+    font-size:.75rem;
+    color:var(--muted);
+    font-weight:600;
+    min-width:30px;
+    text-align:center;
+  }
   .flight-time a{
     color:var(--sea-500);
     font-weight:600;
@@ -857,17 +875,26 @@ Object.entries(COUNTRIES).forEach(([key, c], i) => {
   section.className = "country" + (i === 0 ? " active" : "");
   section.id = "country-" + key;
 
-  const renderOption = (o, oi, total) => `
+  const renderOption = o => `
     <div class="flight-option">
-      ${total > 1 ? `<div class="opt-label">옵션 ${oi + 1}</div>` : ""}
       <div class="flight-time"><span class="dir dir-out">가는편</span> 인천(ICN) → ${c.airport} &nbsp; ${o.out}</div>
       <div class="flight-time"><span class="dir dir-ret">오는편</span> ${c.airport} → 인천(ICN) &nbsp; ${o.ret}</div>
     </div>
   `;
 
   const flightCards = c.flights.map((f, fi) => {
-    const extraId = `extra-${key}-${fi}`;
-    const moreLabel = `더보기 (${f.options.length - 1}개 더) ▾`;
+    const optionsHtml = f.options.length > 1 ? `
+      <div class="option-slider" id="opt-${key}-${fi}">
+        <div class="track">
+          ${f.options.map(o => `<div class="option-slide">${renderOption(o)}</div>`).join("")}
+        </div>
+        <div class="option-nav">
+          <button class="opt-arrow prev" type="button" aria-label="이전 옵션">‹</button>
+          <span class="opt-count">1/${f.options.length}</span>
+          <button class="opt-arrow next" type="button" aria-label="다음 옵션">›</button>
+        </div>
+      </div>
+    ` : renderOption(f.options[0]);
     return `
     <div class="flight-card">
       <div class="flight-head">
@@ -875,13 +902,7 @@ Object.entries(COUNTRIES).forEach(([key, c], i) => {
         <span class="price">${f.price}</span>
       </div>
       <div class="flight-body">
-        ${renderOption(f.options[0], 0, f.options.length)}
-        ${f.options.length > 1 ? `
-          <div class="extra-options" id="${extraId}">
-            ${f.options.slice(1).map((o, oi) => renderOption(o, oi + 1, f.options.length)).join("")}
-          </div>
-          <button class="more-btn" type="button" data-target="${extraId}" data-label="${moreLabel}">${moreLabel}</button>
-        ` : ""}
+        ${optionsHtml}
       </div>
     </div>
   `;
@@ -1011,14 +1032,33 @@ document.getElementById("tabbar").addEventListener("click", e => {
   document.querySelectorAll("section.country").forEach(s => s.classList.toggle("active", s.id === "country-" + btn.dataset.country));
 });
 
-// 항공권 더보기
-sectionsWrap.addEventListener("click", e => {
-  const moreBtn = e.target.closest(".more-btn");
-  if (!moreBtn) return;
-  const target = document.getElementById(moreBtn.dataset.target);
-  const shown = target.classList.toggle("show");
-  moreBtn.textContent = shown ? "접기 ▴" : moreBtn.dataset.label;
-});
+// 항공권 옵션 슬라이더 초기화 (옵션 여러 개인 경우 좌우로 넘겨보기)
+function initOptionSlider(container){
+  const track = container.querySelector(".track");
+  const prevBtn = container.querySelector(".opt-arrow.prev");
+  const nextBtn = container.querySelector(".opt-arrow.next");
+  const countEl = container.querySelector(".opt-count");
+  const total = track.children.length;
+
+  const currentIndex = () => Math.round(track.scrollLeft / track.clientWidth);
+  const goTo = idx => {
+    idx = Math.max(0, Math.min(total - 1, idx));
+    track.scrollTo({ left: idx * track.clientWidth, behavior: "smooth" });
+  };
+
+  prevBtn.addEventListener("click", () => goTo(currentIndex() - 1));
+  nextBtn.addEventListener("click", () => goTo(currentIndex() + 1));
+
+  track.addEventListener("scroll", () => {
+    const idx = currentIndex();
+    countEl.textContent = (idx + 1) + "/" + total;
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  });
+  prevBtn.disabled = true;
+  nextBtn.disabled = total <= 1;
+}
+document.querySelectorAll(".option-slider").forEach(initOptionSlider);
 
 // 인라인 사진 슬라이더 초기화 (클릭하면 라이트박스로 확대)
 function buildSlider(container, images){
