@@ -882,31 +882,35 @@ Object.entries(COUNTRIES).forEach(([key, c], i) => {
     </div>
   `;
 
-  const flightCards = c.flights.map((f, fi) => {
-    const optionsHtml = f.options.length > 1 ? `
-      <div class="option-slider" id="opt-${key}-${fi}">
-        <div class="track">
-          ${f.options.map(o => `<div class="option-slide">${renderOption(o)}</div>`).join("")}
+  // 항공사 × 옵션을 한 장씩 펴서(flatten) 하나의 슬라이드 목록으로 구성
+  // (항공사가 여러 개거나, 한 항공사에 옵션이 여러 개여도 좌우로 한 번에 넘겨봄)
+  const flightSlideCards = [];
+  c.flights.forEach(f => {
+    f.options.forEach(o => {
+      flightSlideCards.push(`
+        <div class="flight-card">
+          <div class="flight-head">
+            <span class="airline">${f.airline}</span>
+            <span class="price">${f.price}</span>
+          </div>
+          <div class="flight-body">${renderOption(o)}</div>
         </div>
-        <div class="option-nav">
-          <button class="opt-arrow prev" type="button" aria-label="이전 옵션">‹</button>
-          <span class="opt-count">1/${f.options.length}</span>
-          <button class="opt-arrow next" type="button" aria-label="다음 옵션">›</button>
-        </div>
+      `);
+    });
+  });
+
+  const flightCards = flightSlideCards.length > 1 ? `
+    <div class="option-slider" id="flights-${key}">
+      <div class="track">
+        ${flightSlideCards.map(html => `<div class="option-slide">${html}</div>`).join("")}
       </div>
-    ` : renderOption(f.options[0]);
-    return `
-    <div class="flight-card">
-      <div class="flight-head">
-        <span class="airline">${f.airline}</span>
-        <span class="price">${f.price}</span>
-      </div>
-      <div class="flight-body">
-        ${optionsHtml}
+      <div class="option-nav">
+        <button class="opt-arrow prev" type="button" aria-label="이전 항공권">‹</button>
+        <span class="opt-count">1/${flightSlideCards.length}</span>
+        <button class="opt-arrow next" type="button" aria-label="다음 항공권">›</button>
       </div>
     </div>
-  `;
-  }).join("");
+  ` : flightSlideCards[0];
 
   const stayHtml = c.stays.length
     ? c.stays.map(s => {
